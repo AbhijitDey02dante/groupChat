@@ -31,7 +31,7 @@ form.addEventListener('submit',(e)=>{
     password.value='';
     axios.post(`${url}/loginUser`,obj)
     .then((result)=>{
-        console.log('Logged in');
+        console.log(result);
     })
     .catch((error)=>{
         console.log(error);
