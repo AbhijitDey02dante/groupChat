@@ -14,13 +14,40 @@ h1{
     padding: 10px;
     background-color: rgb(237, 224, 250);
     position: relative;
-}
-label{
-    width:400px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.7);
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+.signupFormDiv p{
+    position: relative;
+}
+.signupFormDiv p label{
+    position: absolute;
+    font-size: 0.7rem;
+    top:5px;
+    left: 5px;
+    color: rgba(0,0,0,0.7);
+}
+input{
+    width:90vw;
+    padding:20px 5px 5px 5px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 3px solid rgb(176, 139, 212);
+}
+#confirmPasswordText{
+    color: red;
+}
+#confirmPasswordText.active{
+    color: green;
+}
+@media screen and (min-width:599px){
+    input{
+        width:40vw;
+    }
+    
 }

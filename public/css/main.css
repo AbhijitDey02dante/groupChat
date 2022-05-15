@@ -10,3 +10,32 @@ body{
     padding: 0;
     font-family: sans-serif;
 }
+.accountMessage{
+    font-size: 0.8rem;
+}
+.btn:enabled{
+    color: black;
+    background-color: rgb(176, 139, 212);
+    border: none;
+    font-size: 1.3rem;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.btn:disabled{
+    color: rgb(74, 74, 74);
+    background-color: rgb(182, 161, 203);
+    border: none;
+    font-size: 1.3rem;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.btn:enabled:hover{
+    color: black;
+    background-color: rgb(125, 94, 157);
+    border: none;
+    font-size: 1.3rem;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
