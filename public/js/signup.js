@@ -17,7 +17,7 @@ cPassword.addEventListener('keyup',()=>{
         confirmPasswordText.innerText='Password matched';
         submitButton.disabled=false;
     }
-    else
+    else if(password.value.length>0 && cPassword.value.length>0)
     {
         confirmPasswordText.classList.remove('active');
         confirmPasswordText.innerText='Password not matched';
@@ -36,13 +36,24 @@ password.addEventListener('keyup',()=>{
         confirmPasswordText.innerText='';
         submitButton.disabled=true;
     }
-    else{
+    else if(password.value.length>0 && cPassword.value.length>0){
         confirmPasswordText.classList.remove('active');
         confirmPasswordText.innerText='Password not matched';
         submitButton.disabled=true;
     }
 })
 // *************************************************************************
+// Style form***************************************************************
+const input=document.querySelectorAll('input');
+input.forEach((element)=>{
+    element.addEventListener('focusin',(e)=>{
+        e.target.parentElement.children[0].classList.add('active');
+    })
+    element.addEventListener('focusout',(e)=>{
+        if(e.target.value.length<=0)
+            e.target.parentElement.children[0].classList.remove('active');
+    })
+})
 
 // Sending form(************************************************************)
 form.addEventListener('submit',(e)=>{
@@ -53,18 +64,27 @@ form.addEventListener('submit',(e)=>{
         mobile:mobile.value,
         password:password.value
     }
+    nameId.value='';
+    email.value='';
+    mobile.value='';
+    password.value='';
+    cPassword.value='';
     axios.post(`${url}/addUser`,obj)
     .then((result)=>{
-        submitMessage.innerText='User registered';
+        submitMessage.innerText='Successfuly signed up';
+        submitMessage.classList.add('pass');
         setTimeout(()=>{
             submitMessage.innerText='';
+            submitMessage.classList.remove('pass');
         },3000);
     })
     .catch((error)=>{
         console.log(error);
-        submitMessage.innerText='Account already registered with the same email';
+        submitMessage.innerText='User already exists, Please Login';
+        submitMessage.classList.add('fail');
         setTimeout(()=>{
             submitMessage.innerText='';
+            submitMessage.classList.remove('fail');
         },3000);
     })
 })
