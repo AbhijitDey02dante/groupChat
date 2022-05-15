@@ -5,6 +5,7 @@
     align-items: center;
 }
 h1{
+    padding-top: 40px;
     color: white;
 }
 
@@ -48,14 +49,13 @@ input::-webkit-inner-spin-button {
 }
 input{
     background-color: white;
-    width:90vw;
+    width:85vw;
     padding:20px 10px 5px 10px;
     border-radius: 10px;
     border: none;
 }
 input:focus{
     outline: none;
-    border:3px solid rgb(102, 87, 120);
 }
 #confirmPasswordText{
     color: red;
