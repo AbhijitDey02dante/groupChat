@@ -58,11 +58,35 @@ exports.loginUser =async (req,res,next) => {
     }
 }
 
+exports.verifiedUser=(req,res,next)=>{
+    User.findByPk(req.user.id)
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+
+
 exports.sendMessage=(req,res,next)=>{
     const message=req.body.message;
     Chat.create({
         message:message,
         userId:req.user.id
+    })
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+exports.allMessages=(req,res,next)=>{
+    Chat.findAll({
+        include:User
     })
     .then((result)=>{
         res.status(200).json(result);

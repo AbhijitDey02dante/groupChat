@@ -21,10 +21,9 @@ function authenticateToken(req, res, next) {
 
 router.post('/addUser',userController.addUser);
 router.post('/loginUser',userController.loginUser);
-router.get('/verify',authenticateToken,(req,res,next)=>{
-    res.status(200).json({message:"success"});
-})
+router.get('/verify',authenticateToken,userController.verifiedUser);
 router.post('/sendMessage',authenticateToken,userController.sendMessage);
+router.get('/allMessages',authenticateToken,userController.allMessages);
 
 
 module.exports=router;
