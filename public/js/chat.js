@@ -1,7 +1,8 @@
 const url = "http://localhost:3000";
 
 let userName;
-let NoOfMessages;
+let storedMessage=[];
+let messageCount=0;
 // Authenticate if logged in 
 const token=localStorage.getItem('tokenKey');
 configToken = {
@@ -25,18 +26,16 @@ const chatList=document.querySelector('#chatList');
 
 
 document.addEventListener('DOMContentLoaded',()=>{
-    axios.get(`${url}/allMessages`,configToken)
-    .then((result)=>{
-        NoOfMessages=result.data.length;
-        addMessageList(result.data);
-
-        // const li=document.createElement('li');
-        // li.innerText=`You Joined`;
-        // chatList.appendChild(li);
-    })
-    .catch((error)=>{
-        console.log(error);
-    })
+    if(localStorage.getItem('storedMessage'))
+    {
+        storedMessage=JSON.parse(localStorage.getItem('storedMessage'));
+        addMessageList(storedMessage);
+    }
+    if(localStorage.getItem('messageCount'))
+    {
+        messageCount=localStorage.getItem('messageCount');
+        console.log(messageCount);
+    }
 })
 
 //send messages**************************************
@@ -46,7 +45,7 @@ form.addEventListener('submit',(e)=>{
     message.value='';
     axios.post(`${url}/sendMessage`,msg,configToken)
     .then((result)=>{
-        addMessage([result.data],'You');
+        // addMessage([result.data],'You');
     })
     .catch((error)=>{
         console.log(error);
@@ -81,15 +80,32 @@ const addMessageList = (result)=>{
 // use setTimeInterval(() =>. call Api , 1000)
 const update=()=>{
     //update the list
-    axios.get(`${url}/allMessages`,configToken)
+    axios.get(`${url}/allMessages?headerMessage=${messageCount}`,configToken)
     .then((result)=>{
-        if(NoOfMessages<result.data.length){
             // clear the list
-            const item=document.querySelectorAll('#chatList li');
-            item.forEach((element)=>element.remove());
-            addMessageList(result.data);
-            NoOfMessages=result.data.length;
-        }
+            // const item=document.querySelectorAll('#chatList li');
+            // item.forEach((element)=>element.remove());
+
+            const resultData=result.data;
+            storedMessage=[...storedMessage, ...resultData];
+            messageCount= +messageCount + +result.data.length;
+
+            const diff=storedMessage.length-20;
+            if(diff>0)
+            {
+                console.log(storedMessage.length);
+                storedMessage=storedMessage.splice(diff);
+                console.log(storedMessage);
+                console.log(diff);
+            }
+            localStorage.setItem('storedMessage',JSON.stringify(storedMessage));
+            localStorage.setItem('messageCount',messageCount);
+
+            if(result.data.length>0)
+                addMessageList(result.data);
+
+            // console.log(storedMessage,result.data);
+            // console.log(messageCount);
     })
     .catch((error)=>{
         console.log(error);

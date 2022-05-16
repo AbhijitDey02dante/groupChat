@@ -8,6 +8,13 @@ const form=document.querySelector('.signupForm');
 
 
 // *************************************************************************
+// clear previous stored data
+localStorage.removeItem('tokenKey');
+localStorage.removeItem('storedMessage');
+localStorage.removeItem('messageCount');
+
+
+
 // Style form***************************************************************
 const input=document.querySelectorAll('input');
 input.forEach((element)=>{
