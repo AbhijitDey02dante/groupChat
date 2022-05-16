@@ -31,7 +31,8 @@ form.addEventListener('submit',(e)=>{
     password.value='';
     axios.post(`${url}/loginUser`,obj)
     .then((result)=>{
-        console.log(result);
+        localStorage.setItem('tokenKey',result.data);
+        window.location=`chat.html`
     })
     .catch((error)=>{
         console.log(error);

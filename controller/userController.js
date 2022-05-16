@@ -1,5 +1,6 @@
 const bcrypt=require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Chat = require('../model/chat');
 
 const User=require('../model/user');
 
@@ -30,7 +31,7 @@ exports.addUser =async (req,res,next) => {
 
 
 function generateAccessToken(id) {
-    return jwt.sign(id, process.env.token);
+    return jwt.sign(id, process.env.TOKEN);
 }
 exports.loginUser =async (req,res,next) => {
     try{
@@ -55,4 +56,18 @@ exports.loginUser =async (req,res,next) => {
     catch(error){
         res.status(404).json({ success: false, message: "User not found" });
     }
+}
+
+exports.sendMessage=(req,res,next)=>{
+    const message=req.body.message;
+    Chat.create({
+        message:message,
+        userId:req.user.id
+    })
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
 }

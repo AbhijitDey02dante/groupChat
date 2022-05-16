@@ -12,7 +12,7 @@ function authenticateToken(req, res, next) {
   
     if (token == null) return res.sendStatus(401)
   
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+    jwt.verify(token, process.env.TOKEN, (err, user) => {
       if (err) return res.sendStatus(403)
       req.user = user
       next()
@@ -21,6 +21,10 @@ function authenticateToken(req, res, next) {
 
 router.post('/addUser',userController.addUser);
 router.post('/loginUser',userController.loginUser);
+router.get('/verify',authenticateToken,(req,res,next)=>{
+    res.status(200).json({message:"success"});
+})
+router.post('/sendMessage',authenticateToken,userController.sendMessage);
 
 
 module.exports=router;

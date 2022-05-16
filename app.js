@@ -9,12 +9,20 @@ const sequelize=require('./util/database');
 const userRouter=require('./router/userRouter');
 
 const User=require('./model/user');
+const Chat=require('./model/chat');
 
 
 const app=express();
 
 app.use(cors());
 app.use(express.json());
+
+
+User.hasMany(Chat);
+Chat.belongsTo(User);
+
+
+
 app.use(userRouter);
 
 sequelize

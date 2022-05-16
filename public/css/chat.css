@@ -65,12 +65,14 @@ h1{
     justify-content: center;
     align-items: center;
 }
-input{
+#message{
+    background-color:transparent;
     border: none;
-    width:85vw;
+    width:80vw;
 }
-input:focus{
+#message:focus,#message:active{
     outline: none;
+    background-color: transparent;
 }
 .btn{
     background: none;
