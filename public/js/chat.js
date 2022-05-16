@@ -1,6 +1,7 @@
 const url = "http://localhost:3000";
 
 let userName;
+let NoOfMessages;
 // Authenticate if logged in 
 const token=localStorage.getItem('tokenKey');
 configToken = {
@@ -26,11 +27,12 @@ const chatList=document.querySelector('#chatList');
 document.addEventListener('DOMContentLoaded',()=>{
     axios.get(`${url}/allMessages`,configToken)
     .then((result)=>{
+        NoOfMessages=result.data.length;
         addMessageList(result.data);
-        
-        const li=document.createElement('li');
-        li.innerText=`You Joined`;
-        chatList.appendChild(li);
+
+        // const li=document.createElement('li');
+        // li.innerText=`You Joined`;
+        // chatList.appendChild(li);
     })
     .catch((error)=>{
         console.log(error);
@@ -74,3 +76,26 @@ const addMessageList = (result)=>{
         addMessage([element],sender);
     });
 }
+
+// make the application realtime******************************************
+// use setTimeInterval(() =>. call Api , 1000)
+const update=()=>{
+    //update the list
+    axios.get(`${url}/allMessages`,configToken)
+    .then((result)=>{
+        if(NoOfMessages<result.data.length){
+            // clear the list
+            const item=document.querySelectorAll('#chatList li');
+            item.forEach((element)=>element.remove());
+            addMessageList(result.data);
+            NoOfMessages=result.data.length;
+        }
+    })
+    .catch((error)=>{
+        console.log(error);
+    })
+}
+
+setInterval(()=>{
+    update();
+},1000);
