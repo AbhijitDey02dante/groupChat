@@ -1,0 +1,100 @@
+*{
+    box-sizing: content-box;
+}
+body{
+    padding: 0;
+    margin: 0;
+    background-color: rgb(247, 240, 255);
+    font-family: sans-serif;
+}
+
+
+#style1{
+    width:100%;
+    height:100px;
+    background-color: rebeccapurple;
+    padding:0;
+    margin:0;
+    position: relative;
+    top:0;
+}
+
+.middleContainer{
+    width: 100%;
+    position: absolute;
+    top:20px;
+    display: flex;
+    justify-content: center;
+}
+h1{
+    text-align: center;
+}
+.chatWindow{
+    width:90%;
+    background-color: rgb(250, 245, 255);
+    min-height: 90vh;
+    box-shadow: 0px 0px 10px black;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.chatWindowFooter{
+    height:50px;
+}
+
+#chatList{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width:100%;
+}
+#chatList li{
+    padding: 5px 20px;
+}
+#chatList li:nth-child(odd){
+    background-color: rgb(207, 186, 230);
+}
+.msgForm{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: rebeccapurple;
+    height:50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+input{
+    border: none;
+    width:85vw;
+}
+input:focus{
+    outline: none;
+}
+.btn{
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: rebeccapurple;
+}
+.msgForm form{
+    height: 20px;
+    padding: 5px;
+    background-color: white;
+}
+
+@media screen and (min-width:599px){    
+    #chatList{
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        width:80%;
+    }
+    .chatWindow{
+        padding: 10px 30px;
+    }
+    input{
+        width:50vw;
+    }
+}
