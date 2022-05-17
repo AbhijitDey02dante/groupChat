@@ -10,6 +10,9 @@ const userRouter=require('./router/userRouter');
 
 const User=require('./model/user');
 const Chat=require('./model/chat');
+const Group=require('./model/group');
+const GroupMember=require('./model/groupMember');
+const GroupChat=require('./model/groupChat');
 
 
 const app=express();
@@ -21,6 +24,14 @@ app.use(express.json());
 User.hasMany(Chat);
 Chat.belongsTo(User);
 
+User.hasMany(Group);
+Group.belongsTo(User);
+
+Group.hasMany(GroupMember);
+GroupMember.belongsTo(Group);
+
+User.hasMany(GroupChat);
+GroupChat.belongsTo(User);
 
 
 app.use(userRouter);

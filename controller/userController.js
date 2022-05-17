@@ -1,8 +1,13 @@
 const bcrypt=require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const Chat = require('../model/chat');
 
+const { Op } = require('sequelize');
+
+const Chat = require('../model/chat');
 const User=require('../model/user');
+const Group=require('../model/group');
+const GroupMember=require('../model/groupMember');
+const GroupChat=require('../model/groupChat');
 
 exports.addUser =async (req,res,next) => {
     try{
@@ -68,13 +73,35 @@ exports.verifiedUser=(req,res,next)=>{
     })
 }
 
+exports.getAllUser = (req,res,next)=>{
+    User.findAll({
+        where:{
+            id:{[Op.ne]:req.user.id}
+        }
+    })
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
 
 
 exports.sendMessage=(req,res,next)=>{
-    const message=req.body.message;
-    Chat.create({
-        message:message,
-        userId:req.user.id
+    User.findByPk(req.body.userId)
+    .then((result)=>{
+        if(result.id){
+            return Chat.create({
+                message:req.body.message,
+                userId:req.user.id,
+                senderId:req.body.userId   //check
+            })
+        }
+        else{
+            res.status(404).json(error);
+        }
     })
     .then((result)=>{
         res.status(200).json(result);
@@ -86,15 +113,120 @@ exports.sendMessage=(req,res,next)=>{
 
 exports.allMessages=(req,res,next)=>{
     noOfMessage = req.query.headerMessage;
+    const receiverId=req.query.receiverId;
     Chat.findAll({
-        // where:{
-        //     offset:headerMessage,
-        // },
+        where:{
+            [Op.or]:[
+                {senderId:req.user.id,userId:receiverId},
+                {senderId:receiverId,userId:req.user.id}
+            ]
+        },
         include:User,
         offset: +noOfMessage
     })
     .then((result)=>{
         res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+exports.createGroup = (req,res,next)=>{
+    let data;
+    console.log('hello');
+    Group.create({
+        name:req.body.name,
+        userId:req.user.id
+    })
+    .then((result)=>{
+        data=result;
+        return GroupMember.create({
+            userId:req.user.id,
+            groupId:result.id
+        })
+    })
+    .then((result)=>{
+        res.status(200).json(data);
+    })
+    .catch((error)=>{
+        if(data)
+            data.destroy();
+        res.status(404).json(error);
+    })
+
+}
+
+exports.getAllGroups = (req,res,next)=>{
+    GroupMember.findAll({
+        where:{userId:req.user.id},
+        include:Group
+    })
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+exports.sendGroupMessage=(req,res,next)=>{
+    console.log(req.body);
+    Group.findByPk(req.body.userId)
+    .then((result)=>{
+        console.log(result);
+        if(result.id){
+            return GroupChat.create({
+                groupId:req.body.userId,
+                message:req.body.message,
+                userId:req.user.id
+            })
+        }
+        else{
+            res.status(404).json(error);
+        }
+    })
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+exports.allGroupMessages = (req,res,next)=>{
+    noOfMessage = req.query.headerMessage;
+    console.log(req.query.groupMessage);
+    GroupChat.findAll({
+        where:{groupId:req.query.groupMessage},
+        include:User,
+        offset: +noOfMessage
+    })
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+exports.addUserToGroup=(req,res,next)=>{
+    let data;
+    User.findAll({where:{email:req.body.email}})
+    .then((result)=>{
+        if(result[0]){
+            data=result[0];
+            return GroupMember.create({
+                userId:result[0].id,
+                groupId:req.body.groupId
+            })
+        }
+        else{
+            res.status(404).json(error);
+        }
+    })
+    .then((result)=>{
+        res.status(200).json(data);
     })
     .catch((error)=>{
         res.status(404).json(error);

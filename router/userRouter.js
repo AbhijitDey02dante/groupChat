@@ -24,6 +24,12 @@ router.post('/loginUser',userController.loginUser);
 router.get('/verify',authenticateToken,userController.verifiedUser);
 router.post('/sendMessage',authenticateToken,userController.sendMessage);
 router.get('/allMessages',authenticateToken,userController.allMessages);
+router.get('/getAllUser',authenticateToken,userController.getAllUser);
+router.post('/createGroup',authenticateToken,userController.createGroup);
+router.get('/getAllGroups',authenticateToken,userController.getAllGroups);
+router.post('/sendGroupMessage',authenticateToken,userController.sendGroupMessage);
+router.get('/allGroupMessages',authenticateToken,userController.allGroupMessages);
+router.post('/addUserToGroup',authenticateToken,userController.addUserToGroup);
 
 
 module.exports=router;

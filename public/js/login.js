@@ -7,11 +7,6 @@ const submitMessage=document.querySelector('#submitMessage');
 const form=document.querySelector('.signupForm');
 
 
-// *************************************************************************
-// clear previous stored data
-localStorage.removeItem('tokenKey');
-localStorage.removeItem('storedMessage');
-localStorage.removeItem('messageCount');
 
 
 
@@ -38,8 +33,10 @@ form.addEventListener('submit',(e)=>{
     password.value='';
     axios.post(`${url}/loginUser`,obj)
     .then((result)=>{
+        // clear previous stored data
+        localStorage.clear();
         localStorage.setItem('tokenKey',result.data);
-        window.location=`chat.html`
+        window.location=`index.html`
     })
     .catch((error)=>{
         console.log(error);

@@ -1,6 +1,6 @@
 const url = "http://localhost:3000";
 
-let userName;
+let currentId;
 let storedMessage=[];
 let messageCount=0;
 // Authenticate if logged in 
@@ -10,10 +10,12 @@ configToken = {
        Authorization: "Bearer " + token
     }
 }
+const currentUrl = window.location.href;
+const receiverId = currentUrl.substring(currentUrl.lastIndexOf('=')+1);
 
 axios.get(`${url}/verify`,configToken)
 .then((result)=>{
-    userName=result.data.name;
+    currentId=result.data.id;
 })
 .catch((error)=>{
     window.location='login.html';
@@ -26,22 +28,25 @@ const chatList=document.querySelector('#chatList');
 
 
 document.addEventListener('DOMContentLoaded',()=>{
-    if(localStorage.getItem('storedMessage'))
+    if(localStorage.getItem(`storedMessage${receiverId}`))
     {
-        storedMessage=JSON.parse(localStorage.getItem('storedMessage'));
+        storedMessage=JSON.parse(localStorage.getItem(`storedMessage${receiverId}`));
         addMessageList(storedMessage);
     }
-    if(localStorage.getItem('messageCount'))
+    if(localStorage.getItem(`messageCount${receiverId}`))
     {
-        messageCount=localStorage.getItem('messageCount');
-        console.log(messageCount);
+        messageCount=localStorage.getItem(`messageCount${receiverId}`);
     }
+    // update();
 })
 
 //send messages**************************************
 form.addEventListener('submit',(e)=>{
     e.preventDefault();
-    const msg={message:message.value};
+    const msg={
+        message:message.value,
+        userId:receiverId
+    };
     message.value='';
     axios.post(`${url}/sendMessage`,msg,configToken)
     .then((result)=>{
@@ -66,11 +71,11 @@ const addMessage = (result,sender)=>{
 const addMessageList = (result)=>{
     result.forEach((element)=>{
         let sender;
-        if(userName===element.user.name){
-            sender='You';
-        }
-        else{
+        if(receiverId != element.senderId){
             sender=element.user.name;
+         }
+        else{
+            sender=`You`;
         }
         addMessage([element],sender);
     });
@@ -80,7 +85,7 @@ const addMessageList = (result)=>{
 // use setTimeInterval(() =>. call Api , 1000)
 const update=()=>{
     //update the list
-    axios.get(`${url}/allMessages?headerMessage=${messageCount}`,configToken)
+    axios.get(`${url}/allMessages?headerMessage=${messageCount}&receiverId=${receiverId}`,configToken)
     .then((result)=>{
             // clear the list
             // const item=document.querySelectorAll('#chatList li');
@@ -90,7 +95,7 @@ const update=()=>{
             storedMessage=[...storedMessage, ...resultData];
             messageCount= +messageCount + +result.data.length;
 
-            const diff=storedMessage.length-20;
+            const diff=storedMessage.length-100;
             if(diff>0)
             {
                 console.log(storedMessage.length);
@@ -98,8 +103,8 @@ const update=()=>{
                 console.log(storedMessage);
                 console.log(diff);
             }
-            localStorage.setItem('storedMessage',JSON.stringify(storedMessage));
-            localStorage.setItem('messageCount',messageCount);
+            localStorage.setItem(`storedMessage${receiverId}`,JSON.stringify(storedMessage));
+            localStorage.setItem(`messageCount${receiverId}`,messageCount);
 
             if(result.data.length>0)
                 addMessageList(result.data);
