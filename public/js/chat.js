@@ -10,8 +10,13 @@ configToken = {
        Authorization: "Bearer " + token
     }
 }
-const currentUrl = window.location.href;
-const receiverId = currentUrl.substring(currentUrl.lastIndexOf('=')+1);
+const mainUrl = window.location.href;
+let currentUrl = new URL(mainUrl);
+const receiverId=currentUrl.searchParams.get('id');
+const receiverName=currentUrl.searchParams.get('name');
+document.querySelector('.mainHeader').innerText=receiverName;
+document.querySelector('#title').innerText=receiverName;
+// const receiverId = currentUrl.substring(currentUrl.lastIndexOf('=')+1);
 
 axios.get(`${url}/verify`,configToken)
 .then((result)=>{

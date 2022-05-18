@@ -8,6 +8,7 @@ const User=require('../model/user');
 const Group=require('../model/group');
 const GroupMember=require('../model/groupMember');
 const GroupChat=require('../model/groupChat');
+const sequelize=require('../util/database');
 
 exports.addUser =async (req,res,next) => {
     try{
@@ -143,6 +144,7 @@ exports.createGroup = (req,res,next)=>{
         data=result;
         return GroupMember.create({
             userId:req.user.id,
+            isAdmin:1,
             groupId:result.id
         })
     })
@@ -174,7 +176,7 @@ exports.sendGroupMessage=(req,res,next)=>{
     console.log(req.body);
     Group.findByPk(req.body.userId)
     .then((result)=>{
-        console.log(result);
+        // console.log(result);
         if(result.id){
             return GroupChat.create({
                 groupId:req.body.userId,
@@ -197,10 +199,23 @@ exports.sendGroupMessage=(req,res,next)=>{
 exports.allGroupMessages = (req,res,next)=>{
     noOfMessage = req.query.headerMessage;
     console.log(req.query.groupMessage);
-    GroupChat.findAll({
-        where:{groupId:req.query.groupMessage},
-        include:User,
-        offset: +noOfMessage
+    GroupMember.findAll({
+        where:{
+            userId:req.user.id,
+            groupId:req.query.groupMessage
+        }
+    })
+    .then((result)=>{
+        if(result[0]){
+        return GroupChat.findAll({
+                where:{groupId:req.query.groupMessage},
+                include:User,
+                offset: +noOfMessage
+            })
+        }
+        else{
+            res.status(404);
+        }
     })
     .then((result)=>{
         res.status(200).json(result);
@@ -227,6 +242,119 @@ exports.addUserToGroup=(req,res,next)=>{
     })
     .then((result)=>{
         res.status(200).json(data);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+exports.listOfUser = (req,res,next)=>{
+    GroupMember.findAll({
+        where:{
+            groupId:req.body.groupId,
+            userId:{
+                [Op.ne]:req.user.id
+            }
+        },
+        attributes:['id','groupId','isAdmin'],
+        include:[{
+            model:User,
+            attributes:['id','name']
+        }]
+    })
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+exports.removeUserFromGroup = (req,res,next) => {
+    GroupMember.findAll({where:{
+        userId:req.user.id,
+        groupId:req.body.groupId
+    }})
+    .then((result)=>{
+        if(result[0].isAdmin==1){        
+            return GroupMember.findAll({
+                where:{
+                    [Op.and]:{userId:req.body.userId,groupId:req.body.groupId}
+                },
+                include:User
+            })
+        }
+        else{
+            res.status(404);
+        }
+    })
+    .then((result)=>{
+        return result[0].destroy()
+    })
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+exports.addAdmin = (req,res,next) =>{
+    console.log('make Admin');
+    GroupMember.findAll({where:{
+        userId:req.user.id,
+        groupId:req.body.groupId
+    }})
+    .then((result)=>{
+        if(result[0].isAdmin==1){        
+            return GroupMember.findAll({
+                where:{
+                    [Op.and]:{userId:req.body.userId,groupId:req.body.groupId}
+                },
+                include:User
+            })
+        }
+        else{
+            res.status(404);
+        }
+    })
+    .then((result)=>{
+        result[0].isAdmin=1;
+        return result[0].save()
+    })
+    .then((result)=>{
+        res.status(200).json(result);
+    })
+    .catch((error)=>{
+        res.status(404).json(error);
+    })
+}
+
+exports.removeAdmin = (req,res,next) =>{
+    console.log('make Admin');
+    GroupMember.findAll({where:{
+        userId:req.user.id,
+        groupId:req.body.groupId
+    }})
+    .then((result)=>{
+        if(result[0].isAdmin==1){        
+            return GroupMember.findAll({
+                where:{
+                    [Op.and]:{userId:req.body.userId,groupId:req.body.groupId}
+                },
+                include:User
+            })
+        }
+        else{
+            res.status(404);
+        }
+    })
+    .then((result)=>{
+        result[0].isAdmin=null;
+        return result[0].save()
+    })
+    .then((result)=>{
+        res.status(200).json(result);
     })
     .catch((error)=>{
         res.status(404).json(error);

@@ -159,6 +159,12 @@ h1{
 .headerLogo{
     width: 100%;
 }
+.listOfUser{
+    overflow: auto;
+}
+.remove{
+    margin-left: 20px;
+}
 @media screen and (min-width:599px){    
     #chatList{
         list-style-type: none;

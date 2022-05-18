@@ -30,6 +30,10 @@ router.get('/getAllGroups',authenticateToken,userController.getAllGroups);
 router.post('/sendGroupMessage',authenticateToken,userController.sendGroupMessage);
 router.get('/allGroupMessages',authenticateToken,userController.allGroupMessages);
 router.post('/addUserToGroup',authenticateToken,userController.addUserToGroup);
+router.post('/listOfUser',authenticateToken,userController.listOfUser);
+router.post('/removeUserFromGroup',authenticateToken,userController.removeUserFromGroup);
+router.post('/addAdmin',authenticateToken,userController.addAdmin);
+router.post('/removeAdmin',authenticateToken,userController.removeAdmin);
 
 
 module.exports=router;

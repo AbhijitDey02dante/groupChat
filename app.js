@@ -29,6 +29,8 @@ Group.belongsTo(User);
 
 Group.hasMany(GroupMember);
 GroupMember.belongsTo(Group);
+User.hasMany(GroupMember);
+GroupMember.belongsTo(User);
 
 User.hasMany(GroupChat);
 GroupChat.belongsTo(User);

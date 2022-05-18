@@ -10,8 +10,13 @@ configToken = {
        Authorization: "Bearer " + token
     }
 }
-const currentUrl = window.location.href;
-const groupId = currentUrl.substring(currentUrl.lastIndexOf('=')+1);
+const mainUrl = window.location.href;
+let currentUrl = new URL(mainUrl);
+const groupId=currentUrl.searchParams.get('id');
+const groupName=currentUrl.searchParams.get('name');
+document.querySelector('.mainHeader').innerText=groupName;
+document.querySelector('#title').innerText=groupName;
+// const groupId = currentUrl.substring(currentUrl.lastIndexOf('=')+1);
 
 axios.get(`${url}/verify`,configToken)
 .then((result)=>{
@@ -40,12 +45,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     // update();
 })
 
-// side Menu to add user in group
+// side Menu to add user in group**************************************************************************
 const messageAdded=document.querySelector('.messageAdded');
 const settingBtn=document.querySelector('.setting');
 const menuWindow=document.querySelector('.fullMenu');
 const addUserGroupForm = document.querySelector('.fullMenu form');
 const email=document.querySelector('#addUser');
+const listOfUser=document.querySelector('.listOfUser');
 
 settingBtn.addEventListener('click',()=>{
     menuWindow.style.transform=`translateY(0)`;
@@ -55,11 +61,127 @@ menuWindow.addEventListener('click',(e)=>{
         menuWindow.style.transform=`translateY(100%)`;
     }
 })
+// list of users in the group
+axios.post(`${url}/listOfUser`,{groupId:groupId},configToken)
+.then((result)=>{
+    console.log(result.data);
+    result.data.forEach((element)=>{
+        addUserToGroupList(element.user,element.isAdmin);
+    })
+})
+.catch((error)=>{
+    console.log(error);
+})
+const addUserToGroupList = (element,isAdmin)=>{
+    const p=document.createElement('p');
+    p.innerText=element.name;
+    p.id=`user${element.id}`;
+
+    const button=document.createElement('button');
+    button.type='button';
+    button.innerText='Remove';
+    button.className='remove';
+    button.classList.add('btnAdd');
+    p.appendChild(button);
+    if(isAdmin!=1){
+        const admButton=document.createElement('button');
+        admButton.type='button';
+        admButton.innerText='Make Admin';
+        admButton.classList.add('btnAdd');
+        p.appendChild(admButton);
+    }
+    else{
+        const admButton=document.createElement('button');
+        admButton.type='button';
+        admButton.innerText='Remove Admin';
+        admButton.classList.add('btnAdd');
+        p.appendChild(admButton);
+
+    }
+
+    listOfUser.appendChild(p);
+}
+addUserGroupForm.addEventListener('click',(e)=>{
+    if(e.target.className=='remove btnAdd')
+    {
+        const element = e.target.parentElement.id;
+        const id = e.target.parentElement.id.replace('user','');
+        axios.post(`${url}/removeUserFromGroup`,{userId:id,groupId:groupId},configToken)
+        .then((result)=>{
+            document.getElementById(element).remove();
+            messageAdded.innerText=`${result.data.user.name} is removed`;
+            setTimeout(()=>{
+                messageAdded.innerText=``;
+            },3000);
+        })
+        .catch((error)=>{
+            console.log(error);
+            messageAdded.innerText=`You don't have required permission`;
+            setTimeout(()=>{
+                messageAdded.innerText=``;
+            },3000);
+        })
+    }
+    if(e.target.innerText=='Make Admin'){
+        const addButton = e.target;
+        const element = e.target.parentElement;
+        const id = e.target.parentElement.id.replace('user','');
+        axios.post(`${url}/addAdmin`,{userId:id,groupId:groupId},configToken)
+        .then((result)=>{
+            addButton.remove();
+            const admButton=document.createElement('button');
+            admButton.type='button';
+            admButton.innerText='Remove Admin';
+            admButton.classList.add('btnAdd');
+            element.appendChild(admButton);
+            messageAdded.innerText=`${result.data.user.name} is an admin`;
+            setTimeout(()=>{
+                messageAdded.innerText=``;
+            },3000);
+            // addUserToGroupList(result.data.user,result.data.isAdmin);
+        })
+        .catch((error)=>{
+            console.log(error);
+            messageAdded.innerText=`You don't have required permission`;
+            setTimeout(()=>{
+                messageAdded.innerText=``;
+            },3000);
+        })
+    }
+    if(e.target.innerText=='Remove Admin'){
+        const addButton = e.target;
+        const element = e.target.parentElement;
+        const id = e.target.parentElement.id.replace('user','');
+        axios.post(`${url}/removeAdmin`,{userId:id,groupId:groupId},configToken)
+        .then((result)=>{
+            addButton.remove();
+            const admButton=document.createElement('button');
+            admButton.type='button';
+            admButton.innerText='Make Admin';
+            admButton.classList.add('btnAdd');
+            element.appendChild(admButton);
+            messageAdded.innerText=`${result.data.user.name} is removed from admin`;
+            setTimeout(()=>{
+                messageAdded.innerText=``;
+            },3000);
+        })
+        .catch((error)=>{
+            console.log(error);
+            messageAdded.innerText=`You don't have required permission`;
+            setTimeout(()=>{
+                messageAdded.innerText=``;
+            },3000);
+        })
+    }
+})
+
 
 addUserGroupForm.addEventListener('submit',(e)=>{
     e.preventDefault();
     axios.post(`${url}/addUserToGroup`,{email:email.value, groupId:groupId},configToken)
     .then((result)=>{
+        email.value='';
+        addUserToGroupList(result.data,null);
         messageAdded.innerText=`Added ${result.data.name} to the group`;
         setTimeout(()=>{
             messageAdded.innerText=``;
@@ -73,7 +195,7 @@ addUserGroupForm.addEventListener('submit',(e)=>{
         console.log(error);
     })
 })
-
+// *************************************************************************************************
 
 //send messages**************************************
 form.addEventListener('submit',(e)=>{

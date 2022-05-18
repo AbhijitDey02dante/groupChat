@@ -9,9 +9,8 @@ const GroupMember = sequelize.define('groupMember',{
         allowNull:false,
         primaryKey:true
     },
-    userId:{
-        type:Sequelize.INTEGER,
-        allowNull:false
+    isAdmin:{
+        type:Sequelize.INTEGER
     }
 },
 {

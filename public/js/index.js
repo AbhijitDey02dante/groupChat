@@ -47,10 +47,11 @@ axios.get(`${url}/getAllUser`,configToken)
 // groupchat
 axios.get(`${url}/getAllGroups`,configToken)
 .then((result)=>{
-    console.log(result.data);
-    result.data.forEach((element)=>{
-        updateScreen(element.group);
-    })
+    if(result.data.length>0){
+        result.data.forEach((element)=>{
+            updateScreen(element.group);
+        })
+    }
 })
 .catch((error)=>{
     console.log(error);
@@ -63,11 +64,11 @@ userList.addEventListener('click',(e)=>{
     if(e.target.className==='directChat')
     {
         const id = e.target.id.replace('user','');
-        window.location=`chat.html?id=${id}`
+        window.location=`chat.html?id=${id}&name=${e.target.innerText}`
     }
     else if(e.target.className==='groupChat'){
         const id = e.target.id.replace('user','');
-        window.location=`groupchat.html?id=${id}`
+        window.location=`groupchat.html?id=${id}&name=${e.target.innerText}`
     }
 })
 
