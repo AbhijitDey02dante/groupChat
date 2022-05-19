@@ -23,7 +23,7 @@ axios.get(`${url}/verify`,configToken)
     currentId=result.data.id;
 })
 .catch((error)=>{
-    window.location='login.html';
+    window.location='index.html';
 })
 let userCheck;
 

@@ -16,7 +16,7 @@ axios.get(`${url}/verify`,configToken)
     localStorage.setItem('user',result.data.id);
 })
 .catch((error)=>{
-    window.location='login.html';
+    window.location='index.html';
 })
 // Refresh page
 window.addEventListener( "pageshow", function ( event ) {
